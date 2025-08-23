@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ExcelImportService } from '../../../../shared/services/excel-import.service';
 import { AssetCategoriesService } from '../../Service/asset-categories.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { AssetCategoryDto, AssetCategoryTreeDto, AssetCategoryBriefDto, PaginatedListOfAssetCategoryBriefDto } from '../../../../core/services/api-client';
@@ -27,6 +28,7 @@ import { Router } from '@angular/router';
     providers: [ConfirmationService, MessageService]
 })
 export class AssetCategoriesManagementComponent implements OnInit, OnDestroy {
+
     assetCategories: AssetCategoryBriefDto[] = [];
     filteredCategories: AssetCategoryBriefDto[] = [];
     treeNodes: any[] = [];
@@ -47,7 +49,8 @@ export class AssetCategoriesManagementComponent implements OnInit, OnDestroy {
         private confirmationService: ConfirmationService,
         private messageService: MessageService,
         private layoutService: LayoutService,
-        private router: Router
+        private router: Router,
+        private excelImportService: ExcelImportService
     ) {}
 
     get isDarkTheme() {
@@ -96,7 +99,6 @@ export class AssetCategoriesManagementComponent implements OnInit, OnDestroy {
         });
     }
 
-    // لم تعد هناك حاجة لبناء الشجرة يدوياً لأن API يعيدها كشجرة
 
     mapToTreeNodes(data: AssetCategoryTreeDto[]): any[] {
         return data.map((item) => ({
@@ -196,7 +198,6 @@ export class AssetCategoriesManagementComponent implements OnInit, OnDestroy {
         this.router.navigate(['assets/category/edit', category.assetCategoryName]);
     }
 
-
     // Excel Template Download
     downloadExcelTemplate(): void {
         try {
@@ -219,42 +220,41 @@ export class AssetCategoriesManagementComponent implements OnInit, OnDestroy {
     }
 
     // Excel Import
-    importExcel(event: any): void {
-        const file: File = event.files[0];
-        if (!file) {
-            this.messageService.add({ severity: 'error', summary: 'خطأ', detail: 'لم يتم اختيار ملف.' });
-            return;
-        }
+    async importExcel(event: any): Promise<void> {
         this.loading = true;
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const sheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[sheetName];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: ['assetCategoryName', 'parentName', 'isGroup'], defval: '' });
-                // تحقق من الأعمدة
-                const expectedHeaders = ['assetCategoryName', 'parentName', 'isGroup'];
-                const headers = XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0] as string[];
-                if (!headers || headers.length < expectedHeaders.length || !expectedHeaders.every((h, i) => h === headers[i])) {
-                    this.messageService.add({ severity: 'error', summary: 'خطأ', detail: 'ترتيب الأعمدة غير صحيح. يجب أن تكون: assetCategoryName, parentName, isGroup' });
-                    this.loading = false;
-                    return;
+        const importConfig = {
+            expectedHeaders: ['assetCategoryName', 'parentName', 'isGroup'],
+            entityName: 'AssetCategory',
+            getExistingData: () => this.assetCategoriesService.getAssetCategoryList(),
+            createEntity: (entity: any) => {
+                // CreateAssetCategoryCommand expects a class instance, not a plain object
+                const CreateAssetCategoryCommand = (window as any).CreateAssetCategoryCommand || ({} as any);
+                // fallback: if not available on window, try direct import (if available)
+                if (typeof CreateAssetCategoryCommand === 'function') {
+                    return this.assetCategoriesService.addAssetCategory(new CreateAssetCategoryCommand({
+                        assetCategoryName: entity.assetCategoryName,
+                        parentName: entity.parentName,
+                        isGroup: entity.isGroup === true || entity.isGroup === 'true'
+                    }));
+                } else {
+                    // fallback: pass as plain object (if service accepts it)
+                    return this.assetCategoriesService.addAssetCategory({
+                        assetCategoryName: entity.assetCategoryName,
+                        parentName: entity.parentName,
+                        isGroup: entity.isGroup === true || entity.isGroup === 'true'
+                    } as any);
                 }
-                // هنا يمكنك إرسال البيانات إلى السيرفر أو معالجتها حسب الحاجة
-                this.messageService.add({ severity: 'success', summary: 'نجاح', detail: 'تم استيراد الملف بنجاح (معالجة وهمية).' });
-
-                console.log('Imported Data:', jsonData.slice(1)); // تخطي الصف الأول (الرؤوس)
-                // يمكنك استدعاء خدمة لإرسال البيانات إلى السيرفر هنا   
-                
-            } catch (error) {
-                this.messageService.add({ severity: 'error', summary: 'خطأ', detail: 'فشل في قراءة ملف Excel.' });
-            } finally {
-                this.loading = false;
-            }
+            },
+            loadDataMethod: () => this.loadCategories()
         };
-        reader.readAsArrayBuffer(file);
+        try {
+            const result = await this.excelImportService.importExcel(event, importConfig);
+            // الرسائل تظهر تلقائياً من الخدمة
+        } catch (error) {
+            this.messageService.add({ severity: 'error', summary: 'خطأ', detail: 'فشل في استيراد ملف Excel.' });
+        } finally {
+            this.loading = false;
+        }
     }
 
     // Expand/Collapse Tree
