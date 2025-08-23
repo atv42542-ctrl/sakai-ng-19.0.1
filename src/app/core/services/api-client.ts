@@ -374,6 +374,65 @@ export class AssetCategoriesClient {
         return _observableOf(null as any);
     }
 
+    createAssetCategoryList(command: CreateAssetCategoryListCommand): Observable<AssetCategoryBriefDto[]> {
+        let url_ = this.baseUrl + "/api/AssetCategories/list/bulk";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateAssetCategoryList(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateAssetCategoryList(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AssetCategoryBriefDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AssetCategoryBriefDto[]>;
+        }));
+    }
+
+    protected processCreateAssetCategoryList(response: HttpResponseBase): Observable<AssetCategoryBriefDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(AssetCategoryBriefDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
     updateAssetCategory(name: string, command: UpdateAssetCategoryCommand): Observable<void> {
         let url_ = this.baseUrl + "/api/AssetCategories/{name}";
         if (name === undefined || name === null)
@@ -2507,6 +2566,106 @@ export interface ICreateAssetCategoryCommand {
     isGroup?: boolean | undefined;
 }
 
+export class AssetCategoryBriefDto implements IAssetCategoryBriefDto {
+    name?: string;
+    assetCategoryName?: string | undefined;
+    enableCwipAccounting?: boolean;
+    nonDepreciableCategory?: boolean;
+    symbol?: string | undefined;
+    isGroup?: boolean | undefined;
+
+    constructor(data?: IAssetCategoryBriefDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.assetCategoryName = _data["assetCategoryName"];
+            this.enableCwipAccounting = _data["enableCwipAccounting"];
+            this.nonDepreciableCategory = _data["nonDepreciableCategory"];
+            this.symbol = _data["symbol"];
+            this.isGroup = _data["isGroup"];
+        }
+    }
+
+    static fromJS(data: any): AssetCategoryBriefDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AssetCategoryBriefDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["assetCategoryName"] = this.assetCategoryName;
+        data["enableCwipAccounting"] = this.enableCwipAccounting;
+        data["nonDepreciableCategory"] = this.nonDepreciableCategory;
+        data["symbol"] = this.symbol;
+        data["isGroup"] = this.isGroup;
+        return data;
+    }
+}
+
+export interface IAssetCategoryBriefDto {
+    name?: string;
+    assetCategoryName?: string | undefined;
+    enableCwipAccounting?: boolean;
+    nonDepreciableCategory?: boolean;
+    symbol?: string | undefined;
+    isGroup?: boolean | undefined;
+}
+
+export class CreateAssetCategoryListCommand implements ICreateAssetCategoryListCommand {
+    categories?: CreateAssetCategoryCommand[];
+
+    constructor(data?: ICreateAssetCategoryListCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["categories"])) {
+                this.categories = [] as any;
+                for (let item of _data["categories"])
+                    this.categories!.push(CreateAssetCategoryCommand.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateAssetCategoryListCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateAssetCategoryListCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.categories)) {
+            data["categories"] = [];
+            for (let item of this.categories)
+                data["categories"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ICreateAssetCategoryListCommand {
+    categories?: CreateAssetCategoryCommand[];
+}
+
 export class UpdateAssetCategoryCommand implements IUpdateAssetCategoryCommand {
     name?: string;
     assetCategoryName?: string | undefined;
@@ -2693,62 +2852,6 @@ export interface IPaginatedListOfAssetCategoryBriefDto {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-}
-
-export class AssetCategoryBriefDto implements IAssetCategoryBriefDto {
-    name?: string;
-    assetCategoryName?: string | undefined;
-    enableCwipAccounting?: boolean;
-    nonDepreciableCategory?: boolean;
-    symbol?: string | undefined;
-    isGroup?: boolean | undefined;
-
-    constructor(data?: IAssetCategoryBriefDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.name = _data["name"];
-            this.assetCategoryName = _data["assetCategoryName"];
-            this.enableCwipAccounting = _data["enableCwipAccounting"];
-            this.nonDepreciableCategory = _data["nonDepreciableCategory"];
-            this.symbol = _data["symbol"];
-            this.isGroup = _data["isGroup"];
-        }
-    }
-
-    static fromJS(data: any): AssetCategoryBriefDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new AssetCategoryBriefDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["assetCategoryName"] = this.assetCategoryName;
-        data["enableCwipAccounting"] = this.enableCwipAccounting;
-        data["nonDepreciableCategory"] = this.nonDepreciableCategory;
-        data["symbol"] = this.symbol;
-        data["isGroup"] = this.isGroup;
-        return data;
-    }
-}
-
-export interface IAssetCategoryBriefDto {
-    name?: string;
-    assetCategoryName?: string | undefined;
-    enableCwipAccounting?: boolean;
-    nonDepreciableCategory?: boolean;
-    symbol?: string | undefined;
-    isGroup?: boolean | undefined;
 }
 
 export class AssetCategoryTreeDto implements IAssetCategoryTreeDto {

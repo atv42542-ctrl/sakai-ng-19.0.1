@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ExcelImportService } from '../../../../shared/services/excel-import.service';
 import { AssetCategoriesService } from '../../Service/asset-categories.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { AssetCategoryDto, AssetCategoryTreeDto, AssetCategoryBriefDto, PaginatedListOfAssetCategoryBriefDto } from '../../../../core/services/api-client';
+import { AssetCategoryDto, AssetCategoryTreeDto, AssetCategoryBriefDto, PaginatedListOfAssetCategoryBriefDto, CreateAssetCategoryCommand, CreateAssetCategoryListCommand } from '../../../../core/services/api-client';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -14,7 +14,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { AddAssetCategoriesComponent } from '../add-asset-categories/add-asset-categories.component';
 import { EditAssetCategoriesComponent } from '../edit-asset-categories/edit-asset-categories.component';
 import { CommonModule } from '@angular/common';
-import { Subject } from 'rxjs';
+import { lastValueFrom, Subject } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { LayoutService } from '../../../../layout/service/layout.service';
 import { Router } from '@angular/router';
@@ -28,7 +28,6 @@ import { Router } from '@angular/router';
     providers: [ConfirmationService, MessageService]
 })
 export class AssetCategoriesManagementComponent implements OnInit, OnDestroy {
-
     assetCategories: AssetCategoryBriefDto[] = [];
     filteredCategories: AssetCategoryBriefDto[] = [];
     treeNodes: any[] = [];
@@ -98,7 +97,6 @@ export class AssetCategoriesManagementComponent implements OnInit, OnDestroy {
             }
         });
     }
-
 
     mapToTreeNodes(data: AssetCategoryTreeDto[]): any[] {
         return data.map((item) => ({
@@ -203,7 +201,7 @@ export class AssetCategoriesManagementComponent implements OnInit, OnDestroy {
         try {
             this.loading = true;
             const templateData = [
-                ['assetCategoryName', 'parentName', 'isGroup'],
+                ['Name', 'parentName', 'isGroup'],
                 ['تصنيف رئيسي', '', 'true'],
                 ['تصنيف فرعي', 'تصنيف رئيسي', 'false']
             ];
@@ -219,39 +217,37 @@ export class AssetCategoriesManagementComponent implements OnInit, OnDestroy {
         }
     }
 
-    // Excel Import
+    // Excel Import - Bulk
     async importExcel(event: any): Promise<void> {
         this.loading = true;
-        const importConfig = {
-            expectedHeaders: ['assetCategoryName', 'parentName', 'isGroup'],
-            entityName: 'AssetCategory',
-            getExistingData: () => this.assetCategoriesService.getAssetCategoryList(),
-            createEntity: (entity: any) => {
-                // CreateAssetCategoryCommand expects a class instance, not a plain object
-                const CreateAssetCategoryCommand = (window as any).CreateAssetCategoryCommand || ({} as any);
-                // fallback: if not available on window, try direct import (if available)
-                if (typeof CreateAssetCategoryCommand === 'function') {
-                    return this.assetCategoriesService.addAssetCategory(new CreateAssetCategoryCommand({
-                        assetCategoryName: entity.assetCategoryName,
-                        parentName: entity.parentName,
-                        isGroup: entity.isGroup === true || entity.isGroup === 'true'
-                    }));
-                } else {
-                    // fallback: pass as plain object (if service accepts it)
-                    return this.assetCategoriesService.addAssetCategory({
-                        assetCategoryName: entity.assetCategoryName,
-                        parentName: entity.parentName,
-                        isGroup: entity.isGroup === true || entity.isGroup === 'true'
-                    } as any);
-                }
-            },
-            loadDataMethod: () => this.loadCategories()
-        };
+
         try {
+            const importConfig = {
+                expectedHeaders: ['Name', 'parentName', 'isGroup'],
+                entityName: 'AssetCategory',
+                getExistingData: () => this.assetCategoriesService.getAssetCategoryList(),
+                processData: async (data: any[]) => {
+                    const categories = data.map((entity) =>
+                        CreateAssetCategoryCommand.fromJS({
+                            Name: entity.assetCategoryName,
+                            parentName: entity.parentName || '',
+                            isGroup: entity.isGroup === true || entity.isGroup === 'true'
+                        })
+                    );
+                    const command = new CreateAssetCategoryListCommand({ categories });
+
+                    await lastValueFrom(this.assetCategoriesService.addAssetCategorylist(command));
+                },
+                loadDataMethod: () => this.loadCategories()
+            };
             const result = await this.excelImportService.importExcel(event, importConfig);
-            // الرسائل تظهر تلقائياً من الخدمة
         } catch (error) {
-            this.messageService.add({ severity: 'error', summary: 'خطأ', detail: 'فشل في استيراد ملف Excel.' });
+            this.messageService.add({
+                severity: 'error',
+                summary: 'خطأ',
+                detail: 'فشل في استيراد ملف Excel.'
+            });
+            console.error('Excel import error:', error);
         } finally {
             this.loading = false;
         }
