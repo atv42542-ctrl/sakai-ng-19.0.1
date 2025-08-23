@@ -1,26 +1,63 @@
-<form [formGroup]="form" (ngSubmit)="save()">
-  <div class="form-group">
-    <label for="assetCategoryName">اسم التصنيف <span class="required">*</span></label>
-    <input id="assetCategoryName" type="text" formControlName="assetCategoryName" class="form-control" [class.is-invalid]="form.get('assetCategoryName')?.invalid && form.get('assetCategoryName')?.touched" />
-    <div *ngIf="form.get('assetCategoryName')?.invalid && form.get('assetCategoryName')?.touched" class="invalid-feedback">
-      اسم التصنيف مطلوب
+<div class="p-4 max-w-3xl mx-auto">
+  <div class="flex justify-between items-center mb-6">
+    <div class="flex items-center gap-3">
+      <h1 class="text-2xl font-bold">تعديل تصنيف أصل</h1>
+      <p-tag *ngIf="!isSaved" severity="warning" value="غير محفوظ"></p-tag>
+    </div>
+    <p-button type="button" icon="pi pi-save" label="حفظ" class="p-button-sm p-button-dark" (click)="onSave()"></p-button>
+  </div>
+
+  <div class="bg-white p-6 shadow-lg rounded-xl border border-gray-300">
+    <form class="space-y-6">
+      <!-- Asset Category Name -->
+      <div class="form-group">
+        <label for="assetCategoryName" class="block text-sm font-medium text-gray-700 mb-2"> اسم التصنيف <span class="text-red-500">*</span> </label>
+        <input id="assetCategoryName" pInputText [(ngModel)]="category.assetCategoryName" name="assetCategoryName"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="ادخل اسم التصنيف" required />
+      </div>
+
+      <!-- Symbol -->
+      <div class="form-group">
+        <label for="symbol" class="block text-sm font-medium text-gray-700 mb-2">الوصف</label>
+        <input id="symbol" pInputText [(ngModel)]="category.symbol" name="symbol"
+          class="w-full px-4 py-2 border rounded-lg" placeholder="الوصف (اختياري)" />
+      </div>
+
+      <!-- Parent Category -->
+      <div class="form-group">
+        <label for="parentName" class="block text-sm font-medium text-gray-700 mb-2"> التصنيف الأب </label>
+        <input id="parentName" pInputText [value]="selectedCategory?.label || ''" name="parentName"
+          class="w-full px-4 py-2 border rounded-lg cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="اختر التصنيف الأب (اختياري)" readonly (click)="showSelector = true" />
+      </div>
+
+      <!-- Asset Category Selector Dialog -->
+      <p-dialog header="اختيار التصنيف الأب" [(visible)]="showSelector" [modal]="true" [style]="{ width: '50vw' }"
+        [draggable]="false" [resizable]="false">
+        <app-asset-categories-selector [canSelectGroup]="true" (categorySelected)="onCategorySelect($event)"></app-asset-categories-selector>
+      </p-dialog>
+
+      <!-- Additional Options -->
+      <div class="space-y-6 bg-gray-50 p-6 rounded-lg shadow-sm">
+        <h3 class="text-xl font-semibold text-gray-800">خيارات إضافية</h3>
+
+        <div class="flex items-start space-x-3">
+          <p-checkbox [binary]="true" [(ngModel)]="category.isGroup" name="isGroup" inputId="isGroup"></p-checkbox>
+          <label for="isGroup" class="text-sm text-gray-700">
+            <span class="font-medium text-gray-900">مجموعة</span><br />
+            <span class="text-gray-500">حدد إذا كان التصنيف مجموعة.</span>
+          </label>
+        </div>
+      </div>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex justify-end gap-4 mt-8">
+      <button pButton label="✖ إلغاء" class="p-button-secondary" (click)="onCancel()"></button>
+      <button pButton label="✔ حفظ التصنيف" class="p-button-primary" (click)="onSave()"></button>
     </div>
   </div>
-  <div class="form-group">
-    <label for="symbol">الوصف</label>
-    <input id="symbol" type="text" formControlName="symbol" class="form-control" />
-  </div>
-  <div class="form-group">
-    <label for="parentName">التصنيف الأب</label>
-    <input id="parentName" type="text" formControlName="parentName" class="form-control" />
-  </div>
-  <div class="form-group">
-    <label>
-      <input type="checkbox" formControlName="isGroup" /> مجموعة
-    </label>
-  </div>
-  <div class="form-actions">
-    <button pButton type="submit" label="حفظ" [disabled]="loading"></button>
-    <button pButton type="button" label="إلغاء" class="p-button-secondary" (click)="cancel()" [disabled]="loading"></button>
-  </div>
-</form>
+
+  <p-toast></p-toast>
+</div>

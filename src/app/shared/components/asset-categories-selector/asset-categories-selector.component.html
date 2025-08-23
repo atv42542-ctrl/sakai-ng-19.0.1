@@ -1,0 +1,23 @@
+<div class="p-4">
+  <div class="flex items-center gap-2 mb-4">
+    <input pInputText [(ngModel)]="searchValue" (input)="filterTree()" placeholder="بحث عن تصنيف..." class="w-1/2" />
+    <button pButton type="button" icon="pi pi-search" (click)="filterTree()" class="p-button-sm"></button>
+    <button pButton type="button" icon="pi pi-plus" (click)="expandAll()" class="p-button-sm p-button-success" title="توسيع الكل"></button>
+    <button pButton type="button" icon="pi pi-minus" (click)="collapseAll()" class="p-button-sm p-button-warning" title="طي الكل"></button>
+  </div>
+
+  <p-tree
+    [value]="treeNodes"
+    selectionMode="single"
+    [(selection)]="selectedNode"
+    (onNodeSelect)="onNodeSelect($event)"
+    [loading]="loading"
+    class="w-full"
+    [style]="{ minHeight: '300px', maxHeight: '400px', overflow: 'auto' }"
+  ></p-tree>
+
+  <div *ngIf="loading" class="text-center mt-4">
+    <i class="pi pi-spin pi-spinner text-2xl"></i>
+    <span class="ml-2">جاري التحميل...</span>
+  </div>
+</div>

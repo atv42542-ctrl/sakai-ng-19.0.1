@@ -530,6 +530,116 @@ export class AssetCategoriesClient {
         }
         return _observableOf(null as any);
     }
+
+    getAssetCategoryTree(): Observable<AssetCategoryTreeDto[]> {
+        let url_ = this.baseUrl + "/api/AssetCategories/tree";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAssetCategoryTree(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAssetCategoryTree(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AssetCategoryTreeDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AssetCategoryTreeDto[]>;
+        }));
+    }
+
+    protected processGetAssetCategoryTree(response: HttpResponseBase): Observable<AssetCategoryTreeDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(AssetCategoryTreeDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getAssetCategoryList(): Observable<AssetCategoryBriefDto[]> {
+        let url_ = this.baseUrl + "/api/AssetCategories/list";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAssetCategoryList(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAssetCategoryList(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AssetCategoryBriefDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AssetCategoryBriefDto[]>;
+        }));
+    }
+
+    protected processGetAssetCategoryList(response: HttpResponseBase): Observable<AssetCategoryBriefDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(AssetCategoryBriefDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 @Injectable({
@@ -2639,6 +2749,70 @@ export interface IAssetCategoryBriefDto {
     nonDepreciableCategory?: boolean;
     symbol?: string | undefined;
     isGroup?: boolean | undefined;
+}
+
+export class AssetCategoryTreeDto implements IAssetCategoryTreeDto {
+    name?: string;
+    assetCategoryName?: string | undefined;
+    symbol?: string | undefined;
+    parentName?: string | undefined;
+    isGroup?: boolean | undefined;
+    children?: AssetCategoryTreeDto[];
+
+    constructor(data?: IAssetCategoryTreeDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.assetCategoryName = _data["assetCategoryName"];
+            this.symbol = _data["symbol"];
+            this.parentName = _data["parentName"];
+            this.isGroup = _data["isGroup"];
+            if (Array.isArray(_data["children"])) {
+                this.children = [] as any;
+                for (let item of _data["children"])
+                    this.children!.push(AssetCategoryTreeDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): AssetCategoryTreeDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AssetCategoryTreeDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["assetCategoryName"] = this.assetCategoryName;
+        data["symbol"] = this.symbol;
+        data["parentName"] = this.parentName;
+        data["isGroup"] = this.isGroup;
+        if (Array.isArray(this.children)) {
+            data["children"] = [];
+            for (let item of this.children)
+                data["children"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IAssetCategoryTreeDto {
+    name?: string;
+    assetCategoryName?: string | undefined;
+    symbol?: string | undefined;
+    parentName?: string | undefined;
+    isGroup?: boolean | undefined;
+    children?: AssetCategoryTreeDto[];
 }
 
 export class CreateAssetOperationCommand implements ICreateAssetOperationCommand {

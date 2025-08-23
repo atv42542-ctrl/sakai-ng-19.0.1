@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AssetCategoriesClient, AssetCategoryDto, CreateAssetCategoryCommand, PaginatedListOfAssetCategoryBriefDto, UpdateAssetCategoryCommand } from '../../../core/services/api-client';
+import { AssetCategoriesClient, AssetCategoryDto, CreateAssetCategoryCommand, PaginatedListOfAssetCategoryBriefDto, UpdateAssetCategoryCommand, AssetCategoryTreeDto, AssetCategoryBriefDto } from '../../../core/services/api-client';
 
 @Injectable({
     providedIn: 'root'
@@ -16,6 +16,16 @@ export class AssetCategoriesService {
     // Fetch a specific category by name
     getAssetCategoryByName(name: string): Observable<AssetCategoryDto> {
         return this.api.getAssetCategory(name);
+    }
+
+    // Fetch all categories as a tree structure
+    getAssetCategoryTree(): Observable<AssetCategoryTreeDto[]> {
+        return this.api.getAssetCategoryTree();
+    }
+
+    // Fetch all categories as a flat list
+    getAssetCategoryList(): Observable<AssetCategoryBriefDto[]> {
+        return this.api.getAssetCategoryList();
     }
 
     // Add a new category

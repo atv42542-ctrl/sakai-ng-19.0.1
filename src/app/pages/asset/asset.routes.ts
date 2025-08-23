@@ -8,6 +8,6 @@ export const assetRoutes: Routes = [
     // { path: 'add', component: AddAssetComponent },
     // { path: '', component: AssetManagementComponent },
     { path: 'category', component: AssetCategoriesManagementComponent },
-    { path: 'add', component: AddAssetCategoriesComponent },
-    { path: 'edit', component: EditAssetCategoriesComponent }
+    { path: 'category/add', component: AddAssetCategoriesComponent },
+    { path: 'category/edit/:id', component: EditAssetCategoriesComponent }
 ];

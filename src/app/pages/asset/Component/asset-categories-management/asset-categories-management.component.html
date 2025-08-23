@@ -1,33 +1,61 @@
-<div class="asset-categories-management">
-  <h2 class="section-title">إدارة تصنيفات الأصول</h2>
-  <button pButton type="button" label="إضافة تصنيف" icon="pi pi-plus" (click)="showAddDialog()"></button>
-  <p-table [value]="assetCategories" dataKey="name" [responsiveLayout]="'scroll'">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>اسم التصنيف</th>
-        <th>الوصف</th>
-        <th>رمز التصنيف</th>
-        <th>إجراءات</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-category>
-      <tr>
-        <td>{{ category.assetCategoryName }}</td>
-        <td>{{ category.symbol }}</td>
-        <td>{{ category.parentName }}</td>
-        <td>
-          <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text" (click)="showEditDialog(category)"></button>
-          <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="deleteCategory(category)"></button>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+<div class="p-4 max-w-5xl mx-auto" dir="rtl">
+    <h2 class="text-2xl font-bold mb-6 p-4 text-center" [ngClass]="isDarkTheme ? 'dark-title' : 'light-title'">إدارة تصنيفات الأصول</h2>
 
-  <p-dialog header="إضافة تصنيف" [(visible)]="displayAddDialog" [modal]="true" [closable]="false" [style]="{width: '400px'}">
-    <app-add-asset-categories (saved)="onCategoryAdded()" (cancelled)="displayAddDialog = false"></app-add-asset-categories>
-  </p-dialog>
+    <div class="flex mb-4 mt-4 items-center gap-2">
+    <button pButton type="button" label="إضافة تصنيف" icon="pi pi-plus" (click)="navigateToAddcategory()"></button>
+        <button pButton icon="pi pi-download" label="تحميل نموذج Excel" class="p-button-outlined" (click)="downloadExcelTemplate()" [disabled]="loading"></button>
+        <p-fileUpload mode="basic" accept=".xlsx,.xls" (onSelect)="importExcel($event)" chooseLabel="استيراد من اكسل" [auto]="true" class="mx-2" customUpload="true" chooseIcon="pi pi-file-excel" [disabled]="loading"></p-fileUpload>
+        <button pButton [label]="isTreeView ? 'عرض قائمة' : 'عرض شجرة'" (click)="toggleView()" class="p-button-primary" [icon]="isTreeView ? 'pi pi-list' : 'pi pi-sitemap'" iconPos="right"></button>
+    </div>
 
-  <p-dialog header="تعديل تصنيف" [(visible)]="displayEditDialog" [modal]="true" [closable]="false" [style]="{width: '400px'}">
-    <!-- <app-add-asset-categories [category]="selectedCategory" (saved)="onCategoryUpdated()" (cancelled)="displayEditDialog = false"></app-add-asset-categories> -->
-  </p-dialog>
+    <ng-container *ngIf="isTreeView">
+        <div class="mb-4 flex gap-2">
+            <input pInputText [(ngModel)]="filterText" (input)="filterTree()" placeholder="ابحث في التصنيفات" class="w-full p-2 border rounded" />
+            <button pButton label="توسيع الكل" (click)="expandAll()" class="p-button-outlined" [disabled]="loading"></button>
+            <button pButton label="طي الكل" (click)="collapseAll()" class="p-button-outlined" [disabled]="loading"></button>
+        </div>
+        <p-tree [value]="filteredTreeNodes" [dir]="'rtl'" [loading]="loading"></p-tree>
+    </ng-container>
+
+    <ng-container *ngIf="!isTreeView">
+        <div class="mb-4 flex gap-2">
+            <input pInputText [(ngModel)]="filterText" (input)="filterTable()" placeholder="ابحث في التصنيفات" class="w-full p-2 border rounded" />
+        </div>
+        <p-table
+            [value]="filteredCategories"
+            [paginator]="true"
+            [rows]="rows"
+            [rowsPerPageOptions]="[5, 10, 20, 50]"
+            [responsiveLayout]="'scroll'"
+            [totalRecords]="filteredCategories.length"
+            paginatorPosition="bottom"
+            sortMode="single"
+            [sortField]="sortField"
+            [sortOrder]="sortOrder"
+            (onSort)="onSort($event)"
+            [loading]="loading"
+        >
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="assetCategoryName">اسم التصنيف <p-sortIcon field="assetCategoryName"></p-sortIcon></th>
+                    <th pSortableColumn="symbol">الوصف <p-sortIcon field="symbol"></p-sortIcon></th>
+                    <th pSortableColumn="isGroup">مجموعة <p-sortIcon field="isGroup"></p-sortIcon></th>
+                    <th>الإجراءات</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-category>
+                <tr>
+                    <td>{{ category.assetCategoryName }}</td>
+                    <td>{{ category.parentName || '-' }}</td>
+                    <td>{{ category.isGroup ? 'نعم' : 'لا' }}</td>
+                    <td>
+                        <button pButton type="button" icon="pi pi-trash" class="p-button-text p-button-danger" (click)="deleteCategory(category)" [disabled]="loading"></button>
+                        <button pButton type="button" icon="pi pi-pencil" class="p-button-text" (click)="navigateToEditcategory(category)" [disabled]="loading"></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </ng-container>
+
+    <p-toast></p-toast>
 </div>

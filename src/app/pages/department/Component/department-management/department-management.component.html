@@ -1,69 +1,69 @@
 <div class="p-4 max-w-5xl mx-auto" dir="rtl">
-  <h2 class="text-2xl font-bold mb-6 text-center" [ngClass]="isDarkTheme ? 'dark-title' : 'light-title'">
-    إدارة الأقسام
-  </h2>
+    <h2 class="text-2xl font-bold mb-6 text-center" [ngClass]="isDarkTheme ? 'dark-title' : 'light-title'">إدارة الأقسام</h2>
 
+    <div class="flex mb-4 items-center gap-2">
+        <!-- Add Department Button -->
+        <button pButton label="إضافة قسم جديد" (click)="navigateToAddDepartment()" class="p-button-primary" icon="pi pi-plus" iconPos="right"></button>
 
-  <div class="flex mb-4 items-center gap-2">
-    <!-- Add Department Button -->
-    <button pButton label="إضافة قسم جديد" (click)="navigateToAddDepartment()" class="p-button-primary"
-      icon="pi pi-plus" iconPos="right"></button>
+        <!-- Download Excel Template Button -->
+        <button pButton icon="pi pi-download" label="تحميل نموذج Excel" class="p-button-outlined" (click)="downloadExcelTemplate()" [disabled]="loading"></button>
 
-    <!-- Download Excel Template Button -->
-    <button pButton icon="pi pi-download" label="تحميل نموذج Excel" class="p-button-outlined"
-      (click)="downloadExcelTemplate()" [disabled]="loading"></button>
+        <!-- File Upload -->
+        <p-fileUpload mode="basic" accept=".xlsx,.xls" (onSelect)="importExcel($event)" chooseLabel="استيراد من اكسل" [auto]="true" class="mx-2" customUpload="true" chooseIcon="pi pi-file-excel" [disabled]="loading"></p-fileUpload>
 
-    <!-- File Upload -->
-    <p-fileUpload mode="basic" accept=".xlsx,.xls" (onSelect)="importExcel($event)" chooseLabel="استيراد من اكسل"
-      [auto]="true" class="mx-2" customUpload="true" chooseIcon="pi pi-file-excel" [disabled]="loading"></p-fileUpload>
-
-    <!-- Toggle View Button -->
-    <button pButton [label]="isTreeView ? 'عرض قائمة' : 'عرض شجرة'" (click)="toggleView()" class="p-button-primary"
-      [icon]="isTreeView ? 'pi pi-list' : 'pi pi-sitemap'" iconPos="right"></button>
-  </div>
-
-  <ng-container *ngIf="isTreeView">
-    <div class="mb-4 flex gap-2">
-      <input pInputText [(ngModel)]="filterText" (input)="filterTree()" placeholder="ابحث في الأقسام"
-        class="w-full p-2 border rounded" />
-      <button pButton label="توسيع الكل" (click)="expandAll()" class="p-button-outlined" [disabled]="loading"></button>
-      <button pButton label="طي الكل" (click)="collapseAll()" class="p-button-outlined" [disabled]="loading"></button>
+        <!-- Toggle View Button -->
+        <button pButton [label]="isTreeView ? 'عرض قائمة' : 'عرض شجرة'" (click)="toggleView()" class="p-button-primary" [icon]="isTreeView ? 'pi pi-list' : 'pi pi-sitemap'" iconPos="right"></button>
     </div>
-    <p-tree [value]="filteredTreeNodes" [dir]="'rtl'" [loading]="loading"></p-tree>
-  </ng-container>
 
-  <ng-container *ngIf="!isTreeView">
-    <!-- Table Filter Input -->
-    <div class="mb-4 flex gap-2">
-      <input pInputText [(ngModel)]="filterText" (input)="filterTable()" placeholder="ابحث في الأقسام"
-        class="w-full p-2 border rounded" />
-    </div>
-    <p-table [value]="filteredDepartments" [paginator]="true" [rows]="rows" [rowsPerPageOptions]="[5,10,20,50]"
-      [responsiveLayout]="'scroll'" [totalRecords]="filteredDepartments.length" paginatorPosition="bottom"
-      sortMode="single" [sortField]="sortField" [sortOrder]="sortOrder" (onSort)="onSort($event)" [loading]="loading">
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="name">اسم القسم <p-sortIcon field="name"></p-sortIcon></th>
-          <th pSortableColumn="parentDepartment">القسم الأب <p-sortIcon field="parentDepartment"></p-sortIcon></th>
-          <th pSortableColumn="isGroup">مجموعة <p-sortIcon field="isGroup"></p-sortIcon></th>
-          <th>الإجراءات</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-department>
-        <tr>
-          <td>{{ department.name }}</td>
-          <td>{{ department.parentDepartment || '-' }}</td>
-          <td>{{ department.isGroup ? 'نعم' : 'لا' }}</td>
-          <td>
-            <button pButton type="button" icon="pi pi-trash" class="p-button-text p-button-danger"
-              (click)="deleteDepartment(department)" [disabled]="loading"></button>
-            <button pButton type="button" icon="pi pi-pencil" class="p-button-text" (click)="editDepartment(department)"
-              [disabled]="loading"></button>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </ng-container>
+    <ng-container *ngIf="isTreeView">
+        <div class="mb-4 flex gap-2">
+            <input pInputText [(ngModel)]="filterText" (input)="filterTree()" placeholder="ابحث في الأقسام" class="w-full p-2 border rounded" />
+            <button pButton label="توسيع الكل" (click)="expandAll()" class="p-button-outlined" [disabled]="loading"></button>
+            <button pButton label="طي الكل" (click)="collapseAll()" class="p-button-outlined" [disabled]="loading"></button>
+        </div>
+        <p-tree [value]="filteredTreeNodes" [dir]="'rtl'" [loading]="loading"></p-tree>
+    </ng-container>
 
-  <p-toast></p-toast>
+    <ng-container *ngIf="!isTreeView">
+        <!-- Table Filter Input -->
+        <div class="mb-4 flex gap-2">
+            <input pInputText [(ngModel)]="filterText" (input)="filterTable()" placeholder="ابحث في الأقسام" class="w-full p-2 border rounded" />
+        </div>
+        <p-table
+            [value]="filteredDepartments"
+            [paginator]="true"
+            [rows]="rows"
+            [rowsPerPageOptions]="[5, 10, 20, 50]"
+            [responsiveLayout]="'scroll'"
+            [totalRecords]="filteredDepartments.length"
+            paginatorPosition="bottom"
+            sortMode="single"
+            [sortField]="sortField"
+            [sortOrder]="sortOrder"
+            (onSort)="onSort($event)"
+            [loading]="loading"
+        >
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="name">اسم القسم <p-sortIcon field="name"></p-sortIcon></th>
+                    <th pSortableColumn="parentDepartment">القسم الأب <p-sortIcon field="parentDepartment"></p-sortIcon></th>
+                    <th pSortableColumn="isGroup">مجموعة <p-sortIcon field="isGroup"></p-sortIcon></th>
+                    <th>الإجراءات</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-department>
+                <tr>
+                    <td>{{ department.name }}</td>
+                    <td>{{ department.parentDepartment || '-' }}</td>
+                    <td>{{ department.isGroup ? 'نعم' : 'لا' }}</td>
+                    <td>
+                        <button pButton type="button" icon="pi pi-trash" class="p-button-text p-button-danger" (click)="deleteDepartment(department)" [disabled]="loading"></button>
+                        <button pButton type="button" icon="pi pi-pencil" class="p-button-text" (click)="editDepartment(department)" [disabled]="loading"></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </ng-container>
+
+    <p-toast></p-toast>
 </div>
