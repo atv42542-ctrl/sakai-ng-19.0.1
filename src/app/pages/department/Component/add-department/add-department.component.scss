@@ -1,0 +1,73 @@
+:host {
+    display: block;
+    padding: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    font-weight: 500;
+    color: #374151;
+}
+
+input,
+p-checkbox {
+    width: 100%;
+    transition: all 0.2s;
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    }
+
+    &:disabled {
+        background-color: #f3f4f6;
+        cursor: not-allowed;
+    }
+}
+
+p-checkbox {
+    width: 15px;
+}
+
+:host ::ng-deep {
+    .p-checkbox {
+        margin-right: 0.5rem;
+    }
+
+    .p-button {
+        padding: 0.5rem 1rem;
+
+        &.p-button-secondary {
+            background-color: #e5e7eb;
+            color: #374151;
+            border: none;
+
+            &:hover {
+                background-color: #d1d5db;
+            }
+        }
+
+        &.p-button-primary {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+
+            &:hover {
+                background-color: #2563eb;
+            }
+        }
+
+        &.p-button-dark {
+            background-color: #1f2937;
+            color: white;
+            border: none;
+
+            &:hover {
+                background-color: #111827;
+            }
+        }
+    }
+}

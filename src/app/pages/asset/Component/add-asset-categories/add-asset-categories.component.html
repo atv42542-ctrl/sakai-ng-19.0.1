@@ -1,0 +1,26 @@
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="form-group">
+    <label for="assetCategoryName">اسم التصنيف <span class="required">*</span></label>
+    <input id="assetCategoryName" type="text" formControlName="assetCategoryName" class="form-control" [class.is-invalid]="form.get('assetCategoryName')?.invalid && form.get('assetCategoryName')?.touched" />
+    <div *ngIf="form.get('assetCategoryName')?.invalid && form.get('assetCategoryName')?.touched" class="invalid-feedback">
+      اسم التصنيف مطلوب
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="symbol">الوصف</label>
+    <input id="symbol" type="text" formControlName="symbol" class="form-control" />
+  </div>
+  <div class="form-group">
+    <label for="parentName">التصنيف الأب</label>
+    <input id="parentName" type="text" formControlName="parentName" class="form-control" />
+  </div>
+  <div class="form-group">
+    <label>
+      <input type="checkbox" formControlName="isGroup" /> مجموعة
+    </label>
+  </div>
+  <div class="form-actions">
+    <button pButton type="submit" label="حفظ" [disabled]="loading"></button>
+    <button pButton type="button" label="إلغاء" class="p-button-secondary" (click)="cancel()" [disabled]="loading"></button>
+  </div>
+</form>

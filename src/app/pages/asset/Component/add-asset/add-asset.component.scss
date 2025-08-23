@@ -1,0 +1,19 @@
+:host {
+  @apply font-sans;
+}
+
+::ng-deep .p-inputtext, ::ng-deep .p-calendar {
+  @apply w-full;
+}
+
+::ng-deep .p-button {
+  @apply px-6 py-3 rounded-lg;
+}
+
+::ng-deep .p-button.p-button-success {
+  @apply bg-green-600 hover:bg-green-700 text-white;
+}
+
+::ng-deep .p-button.p-button-secondary {
+  @apply bg-gray-500 hover:bg-gray-600 text-white;
+}

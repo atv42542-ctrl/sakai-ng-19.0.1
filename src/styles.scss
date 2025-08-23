@@ -1,0 +1,17 @@
+/* You can add global styles to this file, and also import other style files */
+@use './tailwind.css';
+@use './assets/layout/layout.scss';
+@use 'primeicons/primeicons.css';
+@use './assets/demo/demo.scss';
+body,
+html {
+    font-family: 'Cairo', 'Tajawal', 'Amiri', 'Noto Kufi Arabic', Arial, Tahoma, sans-serif;
+}
+
+.light-title {
+    color: #1e40af;
+}
+
+.dark-title {
+    color: #ffffff;
+}

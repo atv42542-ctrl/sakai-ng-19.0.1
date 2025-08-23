@@ -1,0 +1,18 @@
+.form-group {
+  margin-bottom: 1rem;
+  label {
+    font-weight: 500;
+  }
+  .required {
+    color: red;
+  }
+  .invalid-feedback {
+    color: red;
+    font-size: 0.9em;
+  }
+}
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}

@@ -1,0 +1,18 @@
+:host ::ng-deep .p-datatable-tbody > tr > td:last-child {
+  text-align: center;
+  width: 140px;
+}
+
+:host ::ng-deep .custom-table .p-datatable-thead > tr > th {
+  white-space: nowrap;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0.75rem;
+}
+
+:host ::ng-deep .p-button {
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  &:hover {
+    transform: scale(1.05);
+  }
+}

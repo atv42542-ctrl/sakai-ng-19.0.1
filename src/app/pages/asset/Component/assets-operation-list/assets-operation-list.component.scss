@@ -1,0 +1,33 @@
+/* Styles for Assets Operation List Component */
+
+:host {
+  display: block;
+  padding: 1rem;
+  background-color: #f9f9f9;
+}
+
+h2 {
+  color: #1e3a8a;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+p-table {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+button {
+  margin: 0.25rem;
+}
+
+p-toast {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+}

@@ -1,0 +1,30 @@
+// :host ::ng-deep {
+//   .p-tree {
+//     .p-treenode-icon {
+//       margin-left: 0.5rem; /* Adjust spacing for RTL */
+//     }
+//     .p-treenode-label {
+//       font-size: 1rem;
+//     }
+//     .font-bold {
+//       font-weight: 700; /* Ensure bold style for group nodes */
+//     }
+//   }
+// }
+
+:host ::ng-deep {
+    .p-treenode:not(.p-treenode-selectable) {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    .p-treenode-content {
+        display: flex;
+        align-items: center;
+    }
+    .font-bold {
+        font-weight: bold;
+    }
+    .p-tree-loading {
+        opacity: 0.7;
+    }
+}

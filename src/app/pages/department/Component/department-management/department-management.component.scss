@@ -1,0 +1,77 @@
+:host {
+    display: block;
+    padding: 1.5rem;
+    min-height: 100vh;
+}
+
+h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    letter-spacing: 0.025em;
+}
+
+.p-table {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.p-button {
+    transition: all 0.2s ease;
+    &:hover {
+        transform: translateY(-1px);
+    }
+}
+
+.p-tree {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+input[pInputText] {
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    &:focus {
+        border-color: #1e40af;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+    }
+}
+
+.p-toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 1000;
+}
+
+:host ::ng-deep {
+    .p-tree .p-treenode-content {
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        &.p-highlight {
+            background-color: #e0f2fe;
+            color: #1e40af;
+        }
+    }
+
+    .p-treenode-label {
+        font-size: 1rem;
+    }
+
+    .font-bold {
+        font-weight: 600;
+    }
+
+}

@@ -1,0 +1,22 @@
+<div class="p-4">
+    <div class="flex items-center gap-2 mb-2">
+        <i class="pi pi-search text-primary"></i>
+        <input pInputText [(ngModel)]="searchValue" (input)="filterTree()" placeholder="بحث عن قسم..." class="w-full" />
+    </div>
+    <div class="flex flex-wrap gap-2 mb-6">
+        <p-button icon="pi pi-plus" label="توسيع الكل" (click)="expandAll()" [disabled]="loading || !treeNodes.length" />
+        <p-button icon="pi pi-minus" label="طي الكل" (click)="collapseAll()" [disabled]="loading || !treeNodes.length" />
+    </div>
+    <p-tree
+        [value]="treeNodes"
+        selectionMode="single"
+        [(selection)]="selectedNode"
+        (onNodeSelect)="onNodeSelect($event)"
+        [style]="{ direction: 'rtl' }"
+        class="w-full"
+        [loading]="loading"
+    ></p-tree>
+    <p-toast></p-toast>
+</div>
+
+

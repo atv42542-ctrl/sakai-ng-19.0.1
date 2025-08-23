@@ -1,0 +1,136 @@
+<div class="p-4 max-w-3xl mx-auto" dir="rtl"></div>
+  <h2 class="text-2xl font-bold mb-6 text-center text-blue-800 flex items-center justify-center gap-3">
+    <fa-icon [icon]="faPlus" class="text-blue-600"></fa-icon> تحديث أصل
+  </h2>
+
+  <div class="bg-white p-6 shadow-lg rounded-xl border border-gray-300">
+    <form class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Left Column -->
+      <div class="flex flex-col space-y-4">
+        <!-- Asset Name -->
+        <div>
+          <label for="assetName" class="block text-sm font-medium text-gray-700 mb-2">اسم الأصل <span class="text-red-500">*</span></label>
+          <input id="assetName" pInputText [(ngModel)]="assetName" name="assetName" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="أدخل اسم الأصل" required aria-label="اسم الأصل" aria-describedby="assetName-error" />
+          <span id="assetName-error" class="text-red-500 text-sm" *ngIf="!assetName && formTouched">اسم الأصل مطلوب</span>
+        </div>
+
+        <!-- Serial -->
+        <div>
+          <label for="serial" class="block text-sm font-medium text-gray-700 mb-2">الرقم التسلسلي <span class="text-red-500">*</span></label>
+          <input id="serial" pInputText [(ngModel)]="serial" name="serial" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="أدخل الرقم التسلسلي" required aria-label="الرقم التسلسلي" aria-describedby="serial-error" />
+          <span id="serial-error" class="text-red-500 text-sm" *ngIf="!serial && formTouched">الرقم التسلسلي مطلوب</span>
+        </div>
+
+        <!-- Country of Manufacture -->
+        <div>
+          <label for="countryOfManufacture" class="block text-sm font-medium text-gray-700 mb-2">بلد التصنيع <span class="text-red-500">*</span></label>
+          <input id="countryOfManufacture" pInputText [(ngModel)]="countryOfManufacture" name="countryOfManufacture" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="أدخل بلد التصنيع" required aria-label="بلد التصنيع" aria-describedby="countryOfManufacture-error" />
+          <span id="countryOfManufacture-error" class="text-red-500 text-sm" *ngIf="!countryOfManufacture && formTouched">بلد التصنيع مطلوب</span>
+        </div>
+
+        <!-- Year of Manufacture -->
+        <div>
+          <label for="yearOfManufacture" class="block text-sm font-medium text-gray-700 mb-2">سنة التصنيع <span class="text-red-500">*</span></label>
+          <input id="yearOfManufacture" pInputText type="number" [(ngModel)]="yearOfManufacture" name="yearOfManufacture" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="أدخل سنة التصنيع" min="1900" [max]="currentYear" required aria-label="سنة التصنيع" aria-describedby="yearOfManufacture-error" />
+          <span id="yearOfManufacture-error" class="text-red-500 text-sm" *ngIf="yearOfManufacture !== null && (yearOfManufacture < 1900 || yearOfManufacture > currentYear) && formTouched">
+            يجب أن تكون سنة التصنيع بين 1900 و {{ currentYear }}
+          </span>
+        </div>
+
+        <!-- Manufacturer -->
+        <div>
+          <label for="manufacturer" class="block text-sm font-medium text-gray-700 mb-2">الشركة المصنعة <span class="text-red-500">*</span></label>
+          <input id="manufacturer" pInputText [(ngModel)]="manufacturer" name="manufacturer" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="أدخل الشركة المصنعة" required aria-label="الشركة المصنعة" aria-describedby="manufacturer-error" />
+          <span id="manufacturer-error" class="text-red-500 text-sm" *ngIf="!manufacturer && formTouched">الشركة المصنعة مطلوبة</span>
+        </div>
+
+        <!-- Model -->
+        <div>
+          <label for="model" class="block text-sm font-medium text-gray-700 mb-2">الموديل <span class="text-red-500">*</span></label>
+          <input id="model" pInputText [(ngModel)]="model" name="model" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="أدخل الموديل" required aria-label="الموديل" aria-describedby="model-error" />
+          <span id="model-error" class="text-red-500 text-sm" *ngIf="!model && formTouched">الموديل مطلوب</span>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="flex flex-col space-y-4">
+        <!-- Count -->
+        <div>
+          <label for="count" class="block text-sm font-medium text-gray-700 mb-2">العدد <span class="text-red-500">*</span></label>
+          <input id="count" pInputText type="number" [(ngModel)]="count" name="count" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="أدخل العدد" min="1" required aria-label="العدد" aria-describedby="count-error" />
+          <span id="count-error" class="text-red-500 text-sm" *ngIf="count <= 0 && formTouched">العدد يجب أن يكون أكبر من 0</span>
+        </div>
+
+        <!-- Initial Value -->
+        <div>
+          <label for="initialValue" class="block text-sm font-medium text-gray-700 mb-2">القيمة الأولية</label>
+          <input id="initialValue" pInputText type="number" [(ngModel)]="initialValue" name="initialValue" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="أدخل القيمة الأولية" min="0" aria-label="القيمة الأولية" aria-describedby="initialValue-error" />
+          <span id="initialValue-error" class="text-red-500 text-sm" *ngIf="initialValue < 0 && formTouched">القيمة الأولية يجب ألا تكون سالبة</span>
+        </div>
+
+        <!-- Current Value -->
+        <div>
+          <label for="currentValue" class="block text-sm font-medium text-gray-700 mb-2">القيمة الحالية</label>
+          <input id="currentValue" pInputText type="number" [(ngModel)]="currentValue" name="currentValue" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="أدخل القيمة الحالية" min="0" aria-label="القيمة الحالية" aria-describedby="currentValue-error" />
+          <span id="currentValue-error" class="text-red-500 text-sm" *ngIf="currentValue < 0 && formTouched">القيمة الحالية يجب ألا تكون سالبة</span>
+        </div>
+
+        <!-- Ownership Ratio -->
+        <div>
+          <label for="ownershipRatio" class="block text-sm font-medium text-gray-700 mb-2">نسبة الملكية (%)</label>
+          <input id="ownershipRatio" pInputText type="number" [(ngModel)]="ownershipRatio" name="ownershipRatio" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="أدخل نسبة الملكية" min="0" max="100" aria-label="نسبة الملكية" aria-describedby="ownershipRatio-error" />
+          <span id="ownershipRatio-error" class="text-red-500 text-sm" *ngIf="(ownershipRatio < 0 || ownershipRatio > 100) && formTouched">نسبة الملكية يجب أن تكون بين 0 و 100</span>
+        </div>
+
+        <!-- Date -->
+        <div>
+          <label for="date" class="block text-sm font-medium text-gray-700 mb-2">التاريخ <span class="text-red-500">*</span></label>
+          <p-calendar id="date" [(ngModel)]="date" name="date" dateFormat="dd/mm/yy" placeholder="اختر التاريخ" [showIcon]="true"
+                      styleClass="w-full" inputStyleClass="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required aria-label="التاريخ" aria-describedby="date-error"></p-calendar>
+          <span id="date-error" class="text-red-500 text-sm" *ngIf="!date && formTouched">التاريخ مطلوب</span>
+        </div>
+
+        <!-- Item Name -->
+        <div>
+          <label for="itemName" class="block text-sm font-medium text-gray-700 mb-2">اسم العنصر <span class="text-red-500">*</span></label>
+          <input id="itemName" pInputText [(ngModel)]="itemName" name="itemName" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="أدخل اسم العنصر" required aria-label="اسم العنصر" aria-describedby="itemName-error" />
+          <span id="itemName-error" class="text-red-500 text-sm" *ngIf="!itemName && formTouched">اسم العنصر مطلوب</span>
+        </div>
+      </div>
+
+      <!-- Department -->
+      <div class="col-span-1 md:col-span-2">
+        <label for="department" class="block text-sm font-medium text-gray-700 mb-2">القسم <span class="text-red-500">*</span></label>
+        <input id="department" pInputText [value]="selectedDepartment?.label || ''" name="department" placeholder="اختر القسم" readonly
+               (click)="showSelector = true" class="w-full px-4 py-2 border rounded-lg cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+               aria-required="true" aria-label="القسم" aria-describedby="department-error" />
+        <span id="department-error" class="text-red-500 text-sm" *ngIf="!selectedDepartment && formTouched">القسم مطلوب</span>
+      </div>
+    </form>
+
+    <!-- Department Selector Dialog -->
+    <p-dialog header="اختيار القسم" [(visible)]="showSelector" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+      <app-department-selector (departmentSelected)="onDepartmentSelect($event)"></app-department-selector>
+    </p-dialog>
+
+    <!-- Actions -->
+    <div class="flex justify-end gap-4 mt-6">
+      <button pButton label="إلغاء" icon="pi pi-times" class="p-button-secondary" (click)="onCancel()"></button>
+      <button pButton label="تحديث" icon="pi pi-check" class="p-button-success" (click)="onUpdateAsset()" [disabled]="!formValid"></button>
+    </div>
+  </div>
+
+  <p-toast></p-toast>
+</div>

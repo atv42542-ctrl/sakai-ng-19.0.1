@@ -1,0 +1,33 @@
+<div class="asset-categories-management">
+  <h2 class="section-title">إدارة تصنيفات الأصول</h2>
+  <button pButton type="button" label="إضافة تصنيف" icon="pi pi-plus" (click)="showAddDialog()"></button>
+  <p-table [value]="assetCategories" dataKey="name" [responsiveLayout]="'scroll'">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>اسم التصنيف</th>
+        <th>الوصف</th>
+        <th>رمز التصنيف</th>
+        <th>إجراءات</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-category>
+      <tr>
+        <td>{{ category.assetCategoryName }}</td>
+        <td>{{ category.symbol }}</td>
+        <td>{{ category.parentName }}</td>
+        <td>
+          <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text" (click)="showEditDialog(category)"></button>
+          <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="deleteCategory(category)"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog header="إضافة تصنيف" [(visible)]="displayAddDialog" [modal]="true" [closable]="false" [style]="{width: '400px'}">
+    <app-add-asset-categories (saved)="onCategoryAdded()" (cancelled)="displayAddDialog = false"></app-add-asset-categories>
+  </p-dialog>
+
+  <p-dialog header="تعديل تصنيف" [(visible)]="displayEditDialog" [modal]="true" [closable]="false" [style]="{width: '400px'}">
+    <!-- <app-add-asset-categories [category]="selectedCategory" (saved)="onCategoryUpdated()" (cancelled)="displayEditDialog = false"></app-add-asset-categories> -->
+  </p-dialog>
+</div>

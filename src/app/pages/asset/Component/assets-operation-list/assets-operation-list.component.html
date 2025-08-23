@@ -1,0 +1,34 @@
+<div class="p-4 max-w-5xl mx-auto" dir="rtl">
+  <h2 class="text-2xl font-bold mb-6 text-center text-blue-800">قائمة العمليات على الأصول</h2>
+
+  <p-table [value]="operations" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>رقم العملية</th>
+        <th>العملية</th>
+        <th>رقم المنشأ</th>
+        <th>القيمة الحالية</th>
+        <th>التاريخ</th>
+        <th>المنفذ</th>
+        <th>الحالة</th>
+        <th>الإجراءات</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-operation>
+      <tr>
+        <td>{{ operation.operationNumber }}</td>
+        <td>{{ operation.operation }}</td>
+        <td>{{ operation.originNumber }}</td>
+        <td>{{ operation.currentValue }}</td>
+        <td>{{ operation.date }}</td>
+        <td>{{ operation.operationExecutor }}</td>
+        <td>{{ operation.operationStatus }}</td>
+        <td>
+          <button pButton type="button" label="عرض التفاصيل" class="p-button-info" (click)="viewDetails(operation)"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-toast></p-toast>
+</div>

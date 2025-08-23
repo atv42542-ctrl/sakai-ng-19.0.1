@@ -1,0 +1,85 @@
+:host {
+  display: block;
+  font-family: 'Noto Sans Arabic', sans-serif;
+}
+
+.text-primary {
+  color: #1e88e5; /* PrimeNG primary color */
+}
+
+.p-table {
+  border-radius: 8px;
+  overflow-x: auto;
+
+  th, td {
+    padding: 0.75rem;
+    text-align: right; /* RTL support */
+  }
+
+  th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #1e88e5;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  tr:hover {
+    background-color: #e3f2fd;
+  }
+}
+
+.p-button {
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+
+  &.p-button-primary {
+    background-color: #1e88e5;
+    border-color: #1e88e5;
+
+    &:hover {
+      background-color: #1565c0;
+    }
+  }
+
+  &.p-button-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+
+    &:hover {
+      background-color: #c82333;
+    }
+  }
+}
+
+.p-dialog {
+  .p-dialog-header {
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: #1e88e5;
+  }
+
+  .p-dialog-content {
+    padding: 1rem;
+  }
+}
+
+
+:host ::ng-deep {
+  .p-toast {
+    .p-toast-message {
+      font-family: 'Noto Sans Arabic', sans-serif;
+    }
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .p-table {
+    min-width: unset;
+  }
+
+}
+
