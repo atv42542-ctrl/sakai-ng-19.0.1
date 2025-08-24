@@ -18,12 +18,13 @@ import { lastValueFrom, Subject } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { LayoutService } from '../../../../layout/service/layout.service';
 import { Router } from '@angular/router';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
     selector: 'app-asset-categories-management',
     templateUrl: './asset-categories-management.component.html',
     styleUrls: ['./asset-categories-management.component.scss'],
-    imports: [CommonModule, TableModule, ButtonModule, ToastModule, InputTextModule, FormsModule, TreeModule, FileUploadModule, DialogModule],
+    imports: [CommonModule, TableModule, ButtonModule, ToastModule, InputTextModule, FormsModule, TreeModule, FileUploadModule, DialogModule, ConfirmDialogModule],
     standalone: true,
     providers: [ConfirmationService, MessageService]
 })
@@ -201,9 +202,9 @@ export class AssetCategoriesManagementComponent implements OnInit, OnDestroy {
         try {
             this.loading = true;
             const templateData = [
-                ['Name', 'parentName', 'isGroup'],
-                ['تصنيف رئيسي', '', 'true'],
-                ['تصنيف فرعي', 'تصنيف رئيسي', 'false']
+                ['name', 'parentName', 'isGroup'],
+                ['تصنيف رئيسي', '', true],
+                ['تصنيف فرعي', 'تصنيف رئيسي', false]
             ];
             const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(templateData);
             const wb: XLSX.WorkBook = XLSX.utils.book_new();
@@ -220,21 +221,24 @@ export class AssetCategoriesManagementComponent implements OnInit, OnDestroy {
     // Excel Import - Bulk
     async importExcel(event: any): Promise<void> {
         this.loading = true;
+        console.log('importExcel called');
 
         try {
             const importConfig = {
-                expectedHeaders: ['Name', 'parentName', 'isGroup'],
+                expectedHeaders: ['name', 'parentName', 'isGroup'],
                 entityName: 'AssetCategory',
                 getExistingData: () => this.assetCategoriesService.getAssetCategoryList(),
-                processData: async (data: any[]) => {
+                processData: async (data: CreateAssetCategoryCommand[]) => {
+                    console.log('First row from Excel:', data[0]); // 🔍 debug
                     const categories = data.map((entity) =>
                         CreateAssetCategoryCommand.fromJS({
-                            Name: entity.assetCategoryName,
+                            name: entity.name || '',
                             parentName: entity.parentName || '',
-                            isGroup: entity.isGroup === true || entity.isGroup === 'true'
+                            isGroup: entity.isGroup
                         })
                     );
                     const command = new CreateAssetCategoryListCommand({ categories });
+                    console.log('Importing categories:', command);
 
                     await lastValueFrom(this.assetCategoriesService.addAssetCategorylist(command));
                 },

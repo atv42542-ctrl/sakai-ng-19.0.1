@@ -98,15 +98,46 @@ export class ExcelImportService {
                     const workbook = XLSX.read(data, { type: 'array' });
                     const sheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[sheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: expectedHeaders, defval: '' });
 
+                    // Read first row as headers
                     const headers = XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0] as string[];
-                    if (!headers || !expectedHeaders.every((h, i) => h === headers[i])) {
-                        reject(new Error(`ترتيب الأعمدة غير صحيح. يجب أن تكون: ${expectedHeaders.join(', ')}`));
+                    if (!headers) {
+                        reject(new Error('Excel file is empty or missing headers.'));
                         return;
                     }
 
-                    resolve(jsonData.slice(1) as any[]); // تجاهل الصف الأول
+                    // Normalize headers
+                    const normalizedHeaders = headers.map((h) => (h || '').toString().trim().toLowerCase());
+                    const normalizedExpected = expectedHeaders.map((h) => h.toLowerCase());
+
+                    // Check missing headers
+                    const missingHeaders = normalizedExpected.filter((h) => !normalizedHeaders.includes(h));
+                    if (missingHeaders.length > 0) {
+                        reject(new Error(`Missing columns: ${missingHeaders.join(', ')}`));
+                        return;
+                    }
+
+                    // Raw data with original keys
+                    const rawData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+                    // Normalize keys to match expectedHeaders
+                    const normalizedData = (rawData as any[]).map((row) => {
+                        const newRow: any = {};
+                        for (let i = 0; i < headers.length; i++) {
+                            const originalKey = headers[i];
+                            const normalizedKey = (originalKey || '').trim().toLowerCase();
+                            const expectedIndex = normalizedExpected.indexOf(normalizedKey);
+                            if (expectedIndex !== -1) {
+                                newRow[expectedHeaders[expectedIndex]] = row[originalKey];
+                            }
+                        }
+                        return newRow;
+                    });
+
+                    // Debug first row
+                    console.log('✅ First normalized row:', normalizedData[0]);
+
+                    resolve(normalizedData);
                 } catch (error) {
                     reject(error);
                 }
